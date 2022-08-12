@@ -1,0 +1,144 @@
+﻿@model AccountSystem.ViewModels.InvoiceVM
+
+@{
+    ViewBag.Title = "EditInvoice";
+}
+
+<h2>Edit Invoice</h2>
+<hr />
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <div class="form-inline">
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.InvoiceHeader.ID)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.InvoiceHeader.CustomerName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.InvoiceHeader.CustomerName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.InvoiceHeader.CustomerName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.InvoiceHeader.Invoicedate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.InvoiceHeader.Invoicedate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.InvoiceHeader.Invoicedate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.InvoiceHeader.CashierID, "CashierID", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model =>model.InvoiceHeader.CashierID,ViewBag.CashierID as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control" })
+                @*@Html.DropDownList("CashierID", null, htmlAttributes: new { @class = "form-control" })*@
+                @Html.ValidationMessageFor(model => model.InvoiceHeader.CashierID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.InvoiceHeader.BranchID, "BranchID", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.InvoiceHeader.BranchID, ViewBag.BranchID as IEnumerable<SelectListItem>, htmlAttributes: new { @class = "form-control" })
+                @*@Html.DropDownList("BranchID", null, htmlAttributes: new { @class = "form-control" })*@
+                @Html.ValidationMessageFor(model => model.InvoiceHeader.BranchID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+        @*<div class="form-inline">
+                <button onclick="AddItem(event)" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> <strong>Add New</strong></button>
+            </div>*@
+    </div>
+</div>
+
+
+    <table id="InvoiceItems" class="table table-bordered">
+        <tr>
+            <th>
+                Item Name
+            </th>
+            <th>
+                Item Count
+            </th>
+            <th>
+                Item Price
+            </th>
+            <th></th>
+        </tr>
+        <tr style="background-color:#acd1e9">
+            <th>
+                <input type="text" id="ItemName" placeholder="Item Name" class = "form-control" />
+            </th>
+            <th>
+                <input type="text" id="ItemCount" placeholder="Item Count" class = "form-control" />
+            </th>
+            <th>
+                <input type="text" id="ItemPrice" placeholder="Item Price" class = "form-control" />
+            </th>
+            <th><button onclick="AddItem(event)" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> <strong>Add New</strong></button></th>
+        </tr>
+
+        @foreach (var item in Model.InvoiceDetails)
+        {
+            <tr>
+                @Html.HiddenFor(modelItem => item.ID)
+                <td>
+                    <input type='hidden' name='ItemName' value="@item.ItemName" />
+                    @Html.DisplayFor(modelItem => item.ItemName)
+                </td>
+                <td>
+                    <input type='hidden' name='ItemCount' value="@item.ItemCount" />
+                    @Html.DisplayFor(modelItem => item.ItemCount)
+                </td>
+                <td>
+                    <input type='hidden' name='ItemPrice' value="@item.ItemPrice" />
+                    @Html.DisplayFor(modelItem => item.ItemPrice)
+                </td>
+                <td>
+                    <a class='delete' data-toggle='tooltip' title='Delete'><span class='glyphicon glyphicon-trash'></span></a>
+                </td>
+            </tr>
+        }
+
+    </table>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).on("click", ".delete", function () {
+            $(this).parents("tr").remove();
+        });
+        function AddItem(e) {
+            e.preventDefault();
+            var itemVal = $("#ItemName").val();
+            if (!itemVal) {
+                alert("You must enter the item name before adding it");
+            } else {
+                    $("#InvoiceItems tbody").append("<tr data-id='" + itemVal + "'><td><input type='hidden' name='ItemName' value=" + $("#ItemName").val() + " />" + $("#ItemName").val()
+                        + "</td><td><input type='hidden' name='ItemCount' value=" + $("#ItemCount").val() + " />" + $("#ItemCount").val()
+                        + "</td><td><input type='hidden' name='ItemPrice' value=" + $("#ItemPrice").val() + " />" + $("#ItemPrice").val()
+                        + "</td><td><a class='delete' data-toggle='tooltip' title='Delete'><span class='glyphicon glyphicon-trash'></span></a></td></tr>");
+                    $('[data-toggle="tooltip"]').tooltip();
+                    $('#ItemName').val("");
+                    $('#ItemCount').val("");
+                    $('#ItemPrice').val("");
+            }
+        }
+    </script>
+}
